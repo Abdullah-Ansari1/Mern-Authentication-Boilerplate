@@ -3,9 +3,9 @@ import { FaSignInAlt } from 'react-icons/fa'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { login, reset } from '../features/auth/authSlice'
+import { login, reset, loginWithGoogle } from '../features/auth/authSlice'
 import Spinner from '../components/Spinner'
-
+import { GoogleLogin } from '@react-oauth/google';
 function Login() {
   const [formData, setFormData] = useState({
     email: '',
@@ -50,7 +50,15 @@ function Login() {
 
     dispatch(login(userData))
   }
-
+  const googleSuccess = async (res) => {
+    try {
+    const access_token = res?.credential;
+    dispatch(loginWithGoogle(access_token));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const googleError = () => alert('Google Sign In was unsuccessful. Try again later');
   if (isLoading) {
     return <Spinner />
   }
@@ -95,6 +103,17 @@ function Login() {
             </button>
           </div>
         </form>
+        <GoogleLogin
+        shape= "rectangular"
+        theme='filled_blue'
+        text='Sign up With Google'
+        onSuccess={credentialResponse => {
+         googleSuccess(credentialResponse);
+                                           }}
+        onError={() => {
+        googleError();
+        }}
+/>
       </section>
     </>
   )

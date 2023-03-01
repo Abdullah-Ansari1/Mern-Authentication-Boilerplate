@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
-
+const axios = require("axios");
 // @desc    Register new user
 // @route   POST /api/users
 // @access  Public
@@ -68,6 +68,45 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 })
 
+
+const signinWithGoogle = asyncHandler(async (req, res) => {
+  const { access_token } = req.body;
+  try {
+    let {data} = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${access_token}`);
+    if (data) {  
+      const { email,name } = data;
+      // Validate the user's identity
+        const oldUser = await User.findOne({ email });
+        //if not old user we create a new user
+        if (!oldUser) {
+          const salt = await bcrypt.genSalt(12);
+    
+          const hashedPassword = await bcrypt.hash("anypasswordyouwanttohashedwithsalt", salt);
+    
+          const result = await User.create({ email, password: hashedPassword, name});
+          
+          const token = generateToken(result._id);
+    
+          res.status(201).json({ result, token });
+    
+        }
+         else if (oldUser) {//if old user
+    
+          const token = generateToken(oldUser._id);
+          
+          res.status(200).json({ result: oldUser, token });
+        }
+    }else{
+      res.status(400)
+      throw new Error('Invalid credentials')
+    }
+  } catch (error) {
+    res.status(400)
+    throw new Error('Invalid user data')
+  // res.status(400).json(error.response.data);
+  }
+})
+
 // @desc    Get user data
 // @route   GET /api/users/me
 // @access  Private
@@ -86,4 +125,5 @@ module.exports = {
   registerUser,
   loginUser,
   getMe,
+  signinWithGoogle,
 }
