@@ -9,13 +9,13 @@ import * as serviceWorker from './serviceWorker';
 
 
 ReactDOM.render(
-  <GoogleOAuthProvider clientId="clientid">
+  // <GoogleOAuthProvider clientId="clientid">
   <React.StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
-  </React.StrictMode>
-  </GoogleOAuthProvider>,
+  </React.StrictMode>,
+  // </GoogleOAuthProvider>,
   document.getElementById('root')
 );
 

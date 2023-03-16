@@ -72,7 +72,13 @@ const loginUser = asyncHandler(async (req, res) => {
 const signinWithGoogle = asyncHandler(async (req, res) => {
   const { access_token } = req.body;
   try {
-    let {data} = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${access_token}`);
+    // let {data} = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${access_token}`);
+    let {data} = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`);
+    // let {data} = await axios.get(`https://www.googleapis.com/oauth2/v3/userinfo`,{
+    //   headers: {
+    //     'Authorization': `Bearer ${access_token}` 
+    //   }
+    // });
     if (data) {  
       const { email,name } = data;
       // Validate the user's identity

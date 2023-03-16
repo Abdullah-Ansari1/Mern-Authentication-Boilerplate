@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import { login, reset, loginWithGoogle } from '../features/auth/authSlice'
 import Spinner from '../components/Spinner'
 import { GoogleLogin } from '@react-oauth/google';
+import { LoginSocialGoogle } from 'reactjs-social-login';
 function Login() {
   const [formData, setFormData] = useState({
     email: '',
@@ -52,8 +53,9 @@ function Login() {
   }
   const googleSuccess = async (res) => {
     try {
-    const access_token = res?.credential;
-    dispatch(loginWithGoogle(access_token));
+      console.log(res);
+      const access_token = res?.access_token;
+      dispatch(loginWithGoogle(access_token));
     } catch (error) {
       console.log(error);
     }
@@ -103,17 +105,29 @@ function Login() {
             </button>
           </div>
         </form>
-        <GoogleLogin
-        shape= "rectangular"
-        theme='filled_blue'
-        text='Sign up With Google'
-        onSuccess={credentialResponse => {
-         googleSuccess(credentialResponse);
-                                           }}
-        onError={() => {
-        googleError();
-        }}
-/>
+        {/* <GoogleLogin
+          shape="rectangular"
+          theme='filled_blue'
+          text='Sign up With Google'
+          onSuccess={credentialResponse => {
+            googleSuccess(credentialResponse);
+          }}
+          onError={() => {
+            googleError();
+          }}
+        /> */}
+        <LoginSocialGoogle
+          client_id="client_id"
+          onResolve={({ data }) => {
+            console.log(data, "data");
+            googleSuccess(data);
+          }}
+          onReject={(err) => {
+            console.log("error", err);
+          }}
+        >
+         <button className='btn btn-block'>Google Login</button>
+        </LoginSocialGoogle>
       </section>
     </>
   )
