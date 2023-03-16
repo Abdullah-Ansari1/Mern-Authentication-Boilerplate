@@ -24,7 +24,7 @@ const login = async (userData) => {
   return response.data
 }
 
-// Login user
+// Login user with Google
 const loginWithGoogle = async (userData) => {
   const response = await axios.post(API_URL + 'signinwithgoogle', {access_token:userData})
 
